@@ -159,8 +159,11 @@ M.branches = function(opts)
       --   (HEAD detached at origin/branch)
       local branch = items[1]:match("[^%s%*]*$"):gsub("%)$", "")
       return opts.__preview:gsub("{.*}", branch)
-      -- return "echo " .. branch
-    end, nil, opts.debug)
+      -- similarly to the 'git_diff' previewer, we need to add '--' to mark
+      -- the end of command options, otherwise a worktree branch (prefixed +)
+      -- will cause neovim to interpret the fzf selected item as a neovim command
+      -- which will then fail the previewer (#600)
+    end, "-- {}", opts.debug)
   end
   return git_cmd(opts)
 end
